@@ -64,5 +64,4 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
         mViewModel.doLogin(email, password)
     }
-
 }
