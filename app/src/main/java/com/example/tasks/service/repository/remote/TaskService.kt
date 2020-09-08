@@ -36,7 +36,7 @@ interface TaskService {
         @Field("DueDate") dueData: String,
         @Field("Complete") complete: Boolean
     ): Call<Boolean>
-    
+
     @HTTP(method = "PUT", path = "Task/Complete", hasBody = true)
     @FormUrlEncoded
     fun complete(
