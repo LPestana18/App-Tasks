@@ -55,7 +55,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         val token = mSharedPreferences.get(TaskConstants.SHARED.TOKEN_KEY)
         val person = mSharedPreferences.get(TaskConstants.SHARED.PERSON_KEY)
 
-        val logged = (token != "" && person != "" )
+        val logged = (token != "" && person != "")
 
         if (!logged) {
             mPriorityrepository.all()
