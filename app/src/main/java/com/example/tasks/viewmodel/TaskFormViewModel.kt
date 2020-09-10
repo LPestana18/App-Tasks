@@ -17,10 +17,13 @@ class TaskFormViewModel(application: Application) : AndroidViewModel(application
     private val mTaskRepository = TaskRepository(application)
 
     private val mPriorityList = MutableLiveData<List<PriorityModel>>()
-    var priorities: MutableLiveData<List<PriorityModel>> = mPriorityList
+    var priorities: LiveData<List<PriorityModel>> = mPriorityList
 
     private val mValidation = MutableLiveData<ValidationListener>()
-    var validation: MutableLiveData<ValidationListener> = mValidation
+    var validation: LiveData<ValidationListener> = mValidation
+
+    private val mTask = MutableLiveData<TaskModel>()
+    var task: LiveData<TaskModel> = mTask
 
     fun listPriorities(){
         mPriorityList.value = mPriorityrepository.list()
@@ -37,6 +40,18 @@ class TaskFormViewModel(application: Application) : AndroidViewModel(application
                 mValidation.value = ValidationListener(str)
             }
 
+        })
+    }
+
+    fun load(id: Int) {
+        mTaskRepository.load(id, object : APIListener<TaskModel> {
+            override fun onSuccess(model: TaskModel) {
+                mTask.value = model
+            }
+
+            override fun onFailure(str: String) {
+
+            }
         })
     }
 }
