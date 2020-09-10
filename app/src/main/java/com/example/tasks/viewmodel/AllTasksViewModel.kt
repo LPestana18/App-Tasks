@@ -16,7 +16,7 @@ class AllTasksViewModel(application: Application) : AndroidViewModel(application
     var tasks: LiveData<List<TaskModel>> = mList
 
     fun list() {
-        mTaskrepository.all(object : APIListener<List<TaskModel>>{
+        mTaskrepository.all(object : APIListener<List<TaskModel>> {
 
             override fun onSuccess(model: List<TaskModel>) {
                 mList.value = model
@@ -24,6 +24,40 @@ class AllTasksViewModel(application: Application) : AndroidViewModel(application
 
             override fun onFailure(str: String) {
                 mList.value = arrayListOf()
+            }
+        })
+    }
+
+    fun delete (id: Int) {
+        mTaskrepository.delete(id, object : APIListener<Boolean>{
+
+            override fun onSuccess(model: Boolean) {
+
+            }
+
+            override fun onFailure(str: String) {
+
+            }
+        })
+    }
+
+    fun complete(id: Int) {
+        updateStatus(id, true)
+    }
+
+
+    fun undo(id: Int) {
+        updateStatus(id, false)
+    }
+
+    private fun updateStatus(id: Int, complete: Boolean) {
+        mTaskrepository.updateStatus(id, complete, object : APIListener<Boolean> {
+
+            override fun onSuccess(model: Boolean) {
+                list()
+            }
+
+            override fun onFailure(str: String) {
             }
         })
     }
