@@ -20,6 +20,7 @@ class AllTasksViewModel(application: Application) : AndroidViewModel(application
     var tasks: LiveData<List<TaskModel>> = mList
 
     fun list() {
+
         mTaskrepository.all(object : APIListener<List<TaskModel>> {
 
             override fun onSuccess(model: List<TaskModel>) {
@@ -28,6 +29,7 @@ class AllTasksViewModel(application: Application) : AndroidViewModel(application
 
             override fun onFailure(str: String) {
                 mList.value = arrayListOf()
+                mValidation.value = ValidationListener(str)
             }
         })
     }
