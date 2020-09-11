@@ -38,7 +38,7 @@
         <argument
             android:name="taskfilter"
             app:argType="integer"
-            android:defaultValue="1" />
+            android:defaultValue="2" />
 
     </fragment>
 </navigation>
