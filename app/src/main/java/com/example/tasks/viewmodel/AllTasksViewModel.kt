@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.tasks.service.Model.TaskModel
+import com.example.tasks.service.constants.TaskConstants
 import com.example.tasks.service.listener.APIListener
 import com.example.tasks.service.listener.ValidationListener
 import com.example.tasks.service.repository.TaskRepository
@@ -19,9 +20,14 @@ class AllTasksViewModel(application: Application) : AndroidViewModel(application
     private val mList = MutableLiveData<List<TaskModel>>()
     var tasks: LiveData<List<TaskModel>> = mList
 
-    fun list() {
+    private var mTaskFilter = 0
 
-        mTaskrepository.all(object : APIListener<List<TaskModel>> {
+
+    fun list(taskFilter: Int) {
+
+        mTaskFilter = taskFilter
+
+        val listener = object : APIListener<List<TaskModel>> {
 
             override fun onSuccess(model: List<TaskModel>) {
                 mList.value = model
@@ -31,14 +37,22 @@ class AllTasksViewModel(application: Application) : AndroidViewModel(application
                 mList.value = arrayListOf()
                 mValidation.value = ValidationListener(str)
             }
-        })
+        }
+
+        if (mTaskFilter == TaskConstants.FILTER.ALL) {
+            mTaskrepository.all(listener)
+        }else if(mTaskFilter == TaskConstants.FILTER.NEXT) {
+            mTaskrepository.nextWeek(listener)
+        }else {
+            mTaskrepository.overdue(listener)
+        }
     }
 
     fun delete (id: Int) {
         mTaskrepository.delete(id, object : APIListener<Boolean>{
 
             override fun onSuccess(model: Boolean) {
-                list()
+                list(mTaskFilter)
                 mValidation.value = ValidationListener()
             }
 
@@ -61,7 +75,7 @@ class AllTasksViewModel(application: Application) : AndroidViewModel(application
         mTaskrepository.updateStatus(id, complete, object : APIListener<Boolean> {
 
             override fun onSuccess(model: Boolean) {
-                list()
+                list(mTaskFilter)
             }
 
             override fun onFailure(str: String) {
