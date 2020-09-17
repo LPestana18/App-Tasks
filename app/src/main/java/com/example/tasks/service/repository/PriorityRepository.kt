@@ -1,11 +1,9 @@
 package com.example.tasks.service.repository
 
 import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.os.Build
 import com.example.tasks.service.Model.PriorityModel
 import com.example.tasks.service.constants.TaskConstants
+import com.example.tasks.service.listener.APIListener
 import com.example.tasks.service.repository.local.TaskDatabase
 import com.example.tasks.service.repository.remote.PriorityService
 import com.example.tasks.service.repository.remote.RetrofitClient
@@ -18,9 +16,9 @@ import retrofit2.Response
 class PriorityRepository(val context: Context): BaseRepository(context){
 
     private val mRemote = RetrofitClient.createService(PriorityService::class.java)
-    private val mPriorityDatabase = TaskDatabase.getDatabase(context).priorityDAO()
+    private val mDatabase = TaskDatabase.getDatabase(context).priorityDAO()
 
-    fun all() {
+    fun all(param: APIListener<List<PriorityModel>>) {
 
         if(!isConnectionAvailable(context)) {
             return
@@ -39,15 +37,21 @@ class PriorityRepository(val context: Context): BaseRepository(context){
             ) {
 
                 if (response.code() == TaskConstants.HTTP.SUCCESS) {
-                    mPriorityDatabase.clear()
-                    response.body()?.let { mPriorityDatabase.save(it) }
+                    mDatabase.clear()
+                    response.body()?.let { mDatabase.save(it) }
                 }
             }
         })
     }
 
-    fun list() = mPriorityDatabase.list()
+    fun list() = mDatabase.list()
 
-    fun getDescription(id: Int) = mPriorityDatabase.getDescription(id)
+
+    fun save(list: List<PriorityModel>) {
+        mDatabase.clear()
+        mDatabase.save(list)
+    }
+
+    fun getDescription(id: Int) = mDatabase.getDescription(id)
 
 }
