@@ -1,16 +1,18 @@
 package com.example.tasks.view
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.tasks.R
-import com.example.tasks.service.helper.FingerprintHelper
 import com.example.tasks.viewmodel.LoginViewModel
 import kotlinx.android.synthetic.main.activity_login.*
+import java.util.concurrent.Executor
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -29,7 +31,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         // Verifica se usuário está logado
         verifyLoggedUser()
 
-        FingerprintHelper.isAuthenticationAvailable(this)
+        showAuthentication()
     }
 
     override fun onClick(v: View) {
@@ -39,6 +41,40 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
     }
+
+    private fun showAuthentication() {
+        //Executor
+        val executor: Executor = ContextCompat.getMainExecutor(this)
+
+        // BiometricPrompt
+        val biometricPrompt = BiometricPrompt(this@LoginActivity, executor, object: BiometricPrompt.AuthenticationCallback() {
+
+            override fun onAuthenticationFailed() {
+                super.onAuthenticationFailed()
+
+            }
+
+            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                super.onAuthenticationError(errorCode, errString)
+
+            }
+
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                super.onAuthenticationSucceeded(result)
+
+            }
+        })
+        // BiometricPrompt  INFO
+        val info : BiometricPrompt.PromptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle("Titulo")
+            .setSubtitle("Subtitulo")
+            .setDescription("Descrição")
+            .setNegativeButtonText("Cancelar")
+            .build()
+
+        biometricPrompt.authenticate(info)
+    }
+
 
     /**
      * Inicializa os eventos de click
